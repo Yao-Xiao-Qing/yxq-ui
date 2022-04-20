@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>使用canvas</title>
+  <style>
+    canvas {
+      /* margin不起作用 canvas是一个行内元素 */
+      margin: 0 auto;
+      border: 1px solid #666;
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="cont" width="500px" height="500px"></canvas>
+  <script>
+    var canvas = document.querySelector('#cont')
+    var cvsCtx = canvas.getContext('2d')
+    //画布的宽高
+    var w = 500
+    var h = 500
+
+
+    function r(num) {
+      return Math.random() * num
+    }
+
+    /**
+     * Ball 小球类
+     *@params x  起始坐标
+     *@params y
+     *@params r  小球半径
+     *@params color  
+     *@params xSpeed  
+     *@params ySpeed  x, y, r, color, xSpeed, ySpeed
+    */
+    function Ball() {
+      this.x = 60
+      this.y = 60
+      // this.x = r(380) + 60
+      // this.y = r(380) + 60
+
+      this.r = r(50) + 10 //[10,60)
+      this.color = '#' + parseInt(Math.random() * 0Xffffff).toString(16)
+
+      this.xSpeed = r(3) + 2 //[2,5)
+      this.ySpeed = r(3) + 1 //[1,4)
+    }
+
+    // 定义小球显示方法
+    Ball.prototype.show = function () {
+      //更新小球位置
+      this.run()
+      cvsCtx.beginPath()
+      cvsCtx.arc(this.x, this.y, this.r, 0, Math.PI * 2, false);
+      cvsCtx.fillStyle = this.color
+      cvsCtx.fill()
+    }
+    // 定义小球运动的方法（碰撞检测）
+    Ball.prototype.run = function () {
+      if (this.x - this.r <= 0 || this.x + this.r >= w) {
+        this.xSpeed = -this.xSpeed
+      }
+      // 水平运动
+      this.x += this.xSpeed;
+      if (this.y - this.r <= 0 || this.y + this.r >= h) {
+        this.ySpeed = -this.ySpeed
+      }
+      // 垂直运动
+      this.y += this.ySpeed;
+    }
+
+
+
+    // 创建小球数组（一个大篮子）  创建完小球给它放入数组里面，方便之后的操作
+    var ballArr = []
+    //创建小球
+    for (var i = 0; i < 50; i++) {
+      var ball = new Ball()
+      //放入小球数组
+      ballArr.push(ball)
+      ball.show()
+    }
+
+    //小球运动
+    setInterval(() => {
+      // 清除画布
+      cvsCtx.clearRect(0, 0, w, h);
+
+      for (var i = 0; i < ballArr.length; i++) {
+        var ball = ballArr[i]
+        //更新坐标，显示小球
+        // ball.run()   
+        ball.show()//这里在show里面调用了run方法
+      }
+    }, 20)
+
+  </script>
+</body>
+
+</html>
